@@ -36,8 +36,10 @@ class ChessGame {
 		private ArrayList<Integer> generateMovesForPieceAt(int gridPos) {
 			int[] split = ChessController.splitGridPos(gridPos);
 			ChessPiece toMove = this.gameboard[split[1]][split[0]];
+			if(toMove == null) return null;
+			//System.out.printf("generateMovesForPieceAt: generating moves for %s on %d\n" ,nameFromType[toMove.getType()], gridPos);
 			ArrayList<Integer> moves = new ArrayList<>();
-			if(toMove == null) return moves;
+			
 			int type = toMove.getType();
 
 			switch(type) {
@@ -61,6 +63,8 @@ class ChessGame {
 				break;
 				
 			}
+			
+			//System.out.println("returning from generateMovesForPieceAt");
 			return moves;
 		}
 		
@@ -122,12 +126,57 @@ class ChessGame {
 		}
 		
 		private void generateBishopMoves(int pos, ArrayList<Integer> moves) {
+			int[] split = ChessController.splitGridPos(pos);
+			int startY = split[1];
+			int startX = split[0];
+			int mkY = 0;
+			int mkX = 0;
 			
+			if(startY-1 > -1) {
+				mkY = startY-1;
+				if(startX-1 > -1) {
+					mkX = startX-1;
+					while(mkY > -1 && mkX > -1) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY--;
+						mkX--;
+					}
+				}
+				mkY = startY-1;
+				if(startX+1 < 8) {
+					mkX = startX+1;
+					while(mkY > -1 && mkX < 8) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY--;
+						mkX++;
+					}
+				}
+			}
+			
+			if(startY+1 < 8) {
+				mkY = startY+1;
+				if(startX-1 > -1) {
+					mkX = startX-1;
+					while(mkY < 8 && mkX > -1) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY++;
+						mkX--;
+					}
+				}
+				mkY = startY+1;
+				if(startX+1 < 8) {
+					mkX = startX+1;
+					while(mkY < 8 && mkX < 8) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY++;
+						mkX++;
+					}
+				}
+			}
 		}
 		
 		private void generateKnightMoves(int pos, ArrayList<Integer> moves) {
 			int[] split = ChessController.splitGridPos(pos);
-			ChessPiece toMove = this.gameboard[split[1]][split[0]];
 			ArrayList<Integer> potential = findKnightSquares(pos);
 			for(Integer gridPos : potential) {
 				this.checkPos(pos, gridPos, moves);
@@ -135,11 +184,122 @@ class ChessGame {
 		}
 		
 		private void generateRookMoves(int pos, ArrayList<Integer> moves) {
+			int[] split = ChessController.splitGridPos(pos);
+			int startY = split[1];
+			int startX = split[0];
+			int mkX = 0;
+			int mkY = 0;
+			
+			mkY = startY+1;
+			while(mkY < 8) {
+				this.checkPos(pos, ChessController.joinGridPos(startX, mkY), moves);
+				mkY++;
+			}
+			
+			mkY = startY-1;
+			while(mkY > -1) {
+				this.checkPos(pos, ChessController.joinGridPos(startX, mkY), moves);
+				mkY--;
+			}
+			
+			mkX = startX+1;
+			while(mkX < 8) {
+				this.checkPos(pos,  ChessController.joinGridPos(mkX, startY), moves);
+				mkX++;
+			}
+			
+			mkX = startX-1;
+			while(mkX > -1) {
+				this.checkPos(pos, ChessController.joinGridPos(mkX, startY), moves);
+				mkX--;
+			}
+			
+			
 			
 		}
 		
 		private void generateQueenMoves(int pos, ArrayList<Integer> moves) {
+			//System.out.println("generateQueenmoves()");
+			int[] split = ChessController.splitGridPos(pos);
+			int startY = split[1];
+			int startX = split[0];
+			int mkX = 0;
+			int mkY = 0;
 			
+			mkY = startY+1;
+			while(mkY < 8) {
+				this.checkPos(pos, ChessController.joinGridPos(startX, mkY), moves);
+				mkY++;
+			}
+			
+			//System.out.println("Rook-like 1");
+			
+			mkY = startY-1;
+			while(mkY > -1) {
+				this.checkPos(pos, ChessController.joinGridPos(startX, mkY), moves);
+				mkY--;
+			}
+			
+			//System.out.println("Rook-like 2");
+			
+			mkX = startX+1;
+			while(mkX < 8) {
+				this.checkPos(pos,  ChessController.joinGridPos(mkX, startY), moves);
+				mkX++;
+			}
+			
+			//System.out.println("Rook-like 3");
+			
+			mkX = startX-1;
+			while(mkX > -1) {
+				this.checkPos(pos, ChessController.joinGridPos(mkX, startY), moves);
+				mkX--;
+			}
+			
+			//System.out.println("Rook-like 4");
+			
+			if(startY-1 > -1) {
+				mkY = startY-1;
+				if(startX-1 > -1) {
+					mkX = startX-1;
+					while(mkY > -1 && mkX > -1) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY--;
+						mkX--;
+					}
+				}
+				mkY = startY-1;
+				if(startX+1 < 8) {
+					mkX = startX+1;
+					while(mkY > -1 && mkX < 8) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY--;
+						mkX++;
+					}
+				}
+			}
+			
+			if(startY+1 < 8) {
+				mkY = startY+1;
+				if(startX-1 > -1) {
+					mkX = startX-1;
+					while(mkY < 8 && mkX > -1) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY++;
+						mkX--;
+					}
+				}
+				mkY = startY+1;
+				if(startX+1 < 8) {
+					mkX = startX+1;
+					while(mkY < 8 && mkX < 8) {
+						this.checkPos(pos, ChessController.joinGridPos(mkX, mkY), moves);
+						mkY++;
+						mkX++;
+					}
+				}
+			}
+			//System.out.println("Returning from generateQueenMoves()");
 		}
 		
 		private void generateKingMoves(int pos, ArrayList<Integer> moves) {
@@ -183,6 +343,36 @@ class ChessGame {
 				this.checkPos(pos, newGridPos, moves);
 			}		
 		}
+		
+		public int countLegalMoves(int color, MoveInfoNode[][] boardState) {
+			int cnt = 0;
+			for(int y = 0; y < boardState.length; y++) {
+				for(int x = 0; x < boardState[y].length; x++) {
+					MoveInfoNode cur = boardState[y][x];
+					if(cur != null && cur.getPiece().getColor() == color) {
+						cnt += cur.getMoves().size();
+					}
+				}
+			}
+			return cnt;
+		}
+		
+		public MoveInfoNode[][] generateLegalMoves(int color) {
+			//System.out.printf("generateLegalMoves(%d)", color);
+			MoveInfoNode[][] currentLegalMoves = new MoveInfoNode[8][8];
+			for(int y = 0; y < this.gameboard.length; y++) {
+				for(int x = 0; x < this.gameboard[y].length; x++) {
+					ChessPiece cur = this.gameboard[y][x];
+					if(cur != null) {
+						currentLegalMoves[y][x] = new MoveInfoNode(cur, generateMovesForPieceAt(ChessController.joinGridPos(x, y)));
+					}
+				}
+			}
+			//System.out.println("returning from generateLegalMoves()");
+			return currentLegalMoves;
+		}
+		
+		
 		
 		private boolean checkPos(int _old, int _new, ArrayList<Integer> legalMoves) {
 			if(this.verifyMoveLegality( _old, _new)) {
@@ -270,6 +460,14 @@ class ChessGame {
 		}
 		public boolean whiteInCheck() { return this.whiteInCheck; }
 		public boolean blackInCheck() { return this.blackInCheck; }
+		public void induceCheck(int color) {
+			if(color == 0) this.whiteInCheck = true;
+			else this.blackInCheck = true;
+		}
+		public void reverseCheck(int color) {
+			if(color == 0) this.whiteInCheck = false;
+			else this.blackInCheck = false;
+		}
 		public ChessPiece gameboard(int y, int x) { return this.gameboard[y][x]; }
 		
 		public void _printGameState() {
@@ -331,7 +529,11 @@ class ChessGame {
 		}
 		
 		public boolean verifyMoveLegality(int heldGridPosition, int newGridPos) {
-			
+			int mkX = 0;
+			int mkY = 0;
+			int direction = 0;
+			int directionX = 0;
+			int directionY = 0;
 			if(newGridPos == heldGridPosition) return false; //you cant pass by not moving
 			int[] split = ChessController.splitGridPos(newGridPos);
 			int newGridX = split[0];
@@ -366,6 +568,8 @@ class ChessGame {
 					}
 				
 				case 1: //pawn
+					if(lastHeld.getColor() == 0 && diffY > 0) return false;
+					else if(lastHeld.getColor() == 1 && diffY < 0) return false;
 					if(Math.abs(diffX) > 1 || Math.abs(diffY) > 2) return false;
 					
 					if(Math.abs(diffY) == 2) {
@@ -424,8 +628,26 @@ class ChessGame {
 					} return false;
 
 				case 2: //bishop
+					if(Math.abs(diffX) != Math.abs(diffY)) return false;
 					
-					break;
+					directionX = diffX > 0 ? 1 : -1;
+					directionY = diffY > 0 ? 1 : -1;
+					mkX = oldGridX + directionX;
+					mkY = oldGridY + directionY;
+					while(mkX != newGridX && mkY != newGridY) {
+						ChessPiece t = this.gameboard[mkY][mkX];
+						if(t != null) return false;
+						mkX += directionX;
+						mkY += directionY;
+					}
+					this.gameboard[newGridY][newGridX] = lastHeld;
+					this.gameboard[oldGridY][oldGridX] = null;
+					fixed = isKingSafe(lastHeld.getColor(), (lastHeld.getColor() == 0)? this.whiteKingPos : this.blackKingPos);
+					this.gameboard[newGridY][newGridX] = targetPiece;
+					this.gameboard[oldGridY][oldGridX] = lastHeld;	
+					if(fixed) return true;
+					return false;
+
 				case 3: //knight
 					ArrayList<Integer> knightSquares = findKnightSquares(heldGridPosition);
 					if(!knightSquares.contains(new Integer(newGridPos))) return false;
@@ -442,8 +664,8 @@ class ChessGame {
 					if(Math.abs(diffX) > 0 && Math.abs(diffY) > 0) return false;
 					
 					if(Math.abs(diffX) > 0) {
-						int direction = diffX > 0 ? 1 : -1;
-						int mkX = oldGridX + direction;
+						direction = diffX > 0 ? 1 : -1;
+						mkX = oldGridX + direction;
 						while(mkX != newGridX) {
 							ChessPiece t = this.gameboard[oldGridY][mkX];
 							if(t != null) return false;
@@ -451,9 +673,9 @@ class ChessGame {
 						}
 						
 					} else if(Math.abs(diffY) > 0) {
-						int direction = diffY > 0 ? 1 : -1;
+						direction = diffY > 0 ? 1 : -1;
 						int bound = (direction == 1) ? 8 : -1;
-						int mkY = oldGridY + direction;
+						mkY = oldGridY + direction;
 						while(mkY != bound && mkY != newGridY) {
 							ChessPiece t = this.gameboard[mkY][oldGridX];
 							if(t != null) return false;
@@ -472,11 +694,44 @@ class ChessGame {
 				case 5: //queen
 					
 					if(Math.abs(diffX) > Math.abs(diffY)) {
-						
+						if(Math.abs(diffY) > 0) return false;
+						direction = diffX > 0 ? 1 : -1;
+						mkX = oldGridX + direction;
+						while(mkX != newGridX) {
+							ChessPiece t = this.gameboard[oldGridY][mkX];
+							if(t != null) return false;
+							mkX += direction;
+						}
 					} else if(Math.abs(diffY) > Math.abs(diffX)) {
+						if(Math.abs(diffX) > 0) return false;
+						
+						direction = diffY > 0 ? 1 : -1;
+						int bound = (direction == 1) ? 8 : -1;
+						mkY = oldGridY + direction;
+						while(mkY != bound && mkY != newGridY) {
+							ChessPiece t = this.gameboard[mkY][oldGridX];
+							if(t != null) return false;
+							mkY += direction;
+						}	
 						
 					} else { //Math.abs(diffX) == Math.abs(diffY)
-						
+						directionX = diffX > 0 ? 1 : -1;
+						directionY = diffY > 0 ? 1 : -1;
+						mkX = oldGridX + directionX;
+						mkY = oldGridY + directionY;
+						while(mkX != newGridX && mkY != newGridY) {
+							ChessPiece t = this.gameboard[mkY][mkX];
+							if(t != null) return false;
+							mkX += directionX;
+							mkY += directionY;
+						}
+						this.gameboard[newGridY][newGridX] = lastHeld;
+						this.gameboard[oldGridY][oldGridX] = null;
+						fixed = isKingSafe(lastHeld.getColor(), (lastHeld.getColor() == 0)? this.whiteKingPos : this.blackKingPos);
+						this.gameboard[newGridY][newGridX] = targetPiece;
+						this.gameboard[oldGridY][oldGridX] = lastHeld;	
+						if(fixed) return true;
+						return false;
 					}
 					
 				default:
@@ -489,7 +744,7 @@ class ChessGame {
 			return true;
 		}
 		
-		private boolean isKingSafe(int color, int kingGridPos) {
+		public boolean isKingSafe(int color, int kingGridPos) {
 			ArrayList<Integer> knightSquares = findKnightSquares(kingGridPos);
 			for(Integer i : knightSquares) {
 				int[] split = ChessController.splitGridPos(i);

@@ -26,6 +26,8 @@ public class ChessController {
 		}
 	}
 	
+	
+	
 
 	public boolean attemptMove(int oldGridPos, int newGridPos) {
 		int[] oldSplit = splitGridPos(oldGridPos);
@@ -58,9 +60,45 @@ public class ChessController {
 			boolean check = this.gameState.movePiece_unchecked(oldGridPos, newGridPos);
 			if(!check) return false;
 			
-			
-			
 			System.out.printf("piece moved from grid pos %d to %d successfully\n", oldGridPos, newGridPos);
+			
+			boolean whiteMoveNext = this.gameState.whiteToMove();
+			boolean safe = false;
+			
+			
+			
+			if(whiteMoveNext) { //inside of black's move routine
+				safe = this.gameState.isKingSafe(0, this.gameState.getWhiteKingPos());
+				if(!safe) this.gameState.induceCheck(0);
+				
+				if(this.gameState.blackInCheck()) {
+					safe = this.gameState.isKingSafe(1, this.gameState.getBlackKingPos());
+				}
+				if(safe) this.gameState.reverseCheck(1);
+				
+			} else { //inside of white's move routine
+				safe = this.gameState.isKingSafe(1,  this.gameState.getBlackKingPos());
+				if(!safe) this.gameState.induceCheck(1);
+
+				if(this.gameState.whiteInCheck()) {
+						safe = this.gameState.isKingSafe(0,  this.gameState.getWhiteKingPos());
+				}
+				if(safe) this.gameState.reverseCheck(0);
+			}
+			
+			int numMovesForOpponent = this.gameState.countLegalMoves((whiteMoveNext) ? 0 : 1, this.gameState.generateLegalMoves((this.gameState.whiteToMove()) ? 0 : 1));
+			if(numMovesForOpponent == 0) { //end game! We need to determine if its stale mate or not
+				int endType = -1;
+				int colorWinner = 0;
+				if(this.gameState.whiteInCheck() || this.gameState.blackInCheck()) {
+					endType = 0;
+					if(this.gameState.whiteInCheck()) colorWinner = 1;
+				} else {
+					endType = 1;
+				}
+				this.view.gameOver(endType, colorWinner);
+			}
+			
 			this.view.updatePiece(newGridPos);
 			this.gameState._printGameState();
 			return true;
